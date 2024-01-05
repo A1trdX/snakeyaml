@@ -365,6 +365,7 @@
                         <configuration>
                             <configFile>src/etc/eclipse-java-google-style.xml</configFile>
                             <encoding>UTF-8</encoding>
+                            <lineEnding>LF</lineEnding>
                         </configuration>
                     </execution>
                 </executions>
