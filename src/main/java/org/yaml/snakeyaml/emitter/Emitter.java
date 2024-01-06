@@ -1,5 +1,6 @@
 /**
  * Copyright (c) 2008, SnakeYAML
+ * Copyright (c) 2024, Liubomyr Boiko
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -985,6 +986,12 @@ public final class Emitter implements Emitable {
       style = chooseScalarStyle();
     }
     boolean split = !simpleKeyContext && splitLines;
+
+    // Single-line value strings are always double quoted
+    if (!simpleKeyContext && !analysis.isMultiline() && !isNumberOrBoolean(ev.getValue())) {
+      style = ScalarStyle.DOUBLE_QUOTED;
+    }
+
     if (style == null) {
       writePlain(analysis.getScalar(), split);
     } else {
@@ -1007,6 +1014,25 @@ public final class Emitter implements Emitable {
     }
     analysis = null;
     style = null;
+  }
+
+  private boolean isNumberOrBoolean(String scalar) {
+    if (scalar == null) {
+      return false;
+    }
+
+    if (Boolean.parseBoolean(scalar)) {
+      return true;
+    }
+
+    try {
+      Double.parseDouble(scalar);
+      return true;
+    } catch (NumberFormatException ex) {
+      // Ignore
+    }
+
+    return false;
   }
 
   // Analyzers.
